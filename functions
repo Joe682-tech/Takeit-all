@@ -1,0 +1,33 @@
+const nodemailer = require('nodemailer');
+
+exports.handler = async function(event, context) {
+    const { customer_name, customer_phone, customer_address } = JSON.parse(event.body);
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'your_email@gmail.com', // Replace with your email
+            pass: 'your_email_password',  // Replace with your email password or app password
+        },
+    });
+
+    const mailOptions = {
+        from: 'no-reply@yourstore.com',
+        to: 'georgendhlovu35@gmail.com', // Your email to receive notifications
+        subject: `New Order from ${customer_name}`,
+        text: `Customer Name: ${customer_name}\nPhone: ${customer_phone}\nAddress: ${customer_address}`,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: 'Order processed successfully' }),
+        };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Error sending email' }),
+        };
+    }
+};
